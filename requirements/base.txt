@@ -1,0 +1,6 @@
+Django
+djangorestframework
+drf-spectacular
+python-decouple
+Pillow
+psycopg[binary]
