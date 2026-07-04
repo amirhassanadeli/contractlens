@@ -130,3 +130,20 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
+
+
+# Ollama
+EMBEDDING_MODEL = "nomic-embed-text"
+LLM_MODEL = "qwen2.5:7b"
+TEMPERATURE = 0.2
+
+# Chunking
+CHUNK_SIZE = 800
+CHUNK_OVERLAP = 100
+
+# Retrieval
+TOP_K = 4
+FETCH_K = 20
+
+# Vector DB
+CHROMA_DIR = BASE_DIR / "chroma_db"

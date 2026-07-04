@@ -60,3 +60,8 @@ class ContractCreateSerializer(serializers.ModelSerializer):
         file.seek(0)
 
         return file
+
+class QuestionSerializer(serializers.Serializer):
+    question = serializers.CharField(
+        max_length=255,
+    )
