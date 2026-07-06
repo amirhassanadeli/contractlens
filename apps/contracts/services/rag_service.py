@@ -1,3 +1,6 @@
+from uuid import uuid4
+from django.utils import timezone
+
 from django.conf import settings
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -85,7 +88,21 @@ Context:
             }
         )
 
+        sources = []
+
+        for document in response["context"]:
+            sources.append(
+                {
+                    "filename": document.metadata.get("filename"),
+                    "page": document.metadata.get("page_number", 1),
+                    "excerpt": document.page_content[:200],
+                }
+            )
+
         return {
-            "answer": response["answer"],
-            "sources": response["context"],
+            "id": str(uuid4()),
+            "role": "assistant",
+            "content": response["answer"],
+            "sources": sources,
+            "created_at": timezone.now().isoformat(),
         }
