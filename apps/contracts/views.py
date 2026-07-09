@@ -6,6 +6,7 @@ from rest_framework.viewsets import ViewSet
 from .models import (
     Contract,
     Conversation,
+    Message,
 )
 from .serializers import (
     ContractCreateSerializer,
@@ -18,11 +19,14 @@ from .serializers import (
     MessageSerializer,
     SendMessageSerializer,
 
+    MessageFeedbackSerializer,
+
 )
 from .services.contract_service import ContractService
 from .services.rag_service import RAGService
 from .services.conversation_service import ConversationService
 from .services.message_service import MessageService
+from .services.message_feedback_service import MessageFeedbackService
 
 
 class ContractViewSet(viewsets.ModelViewSet):
@@ -77,6 +81,7 @@ class ContractViewSet(viewsets.ModelViewSet):
             result,
             status=status.HTTP_200_OK,
         )
+
 
 @action(
     detail=True,
@@ -190,4 +195,34 @@ class MessageViewSet(viewsets.ViewSet):
         return Response(
             response.data,
             status=status.HTTP_201_CREATED,
+        )
+
+
+class MessageActionViewSet(ViewSet):
+
+    def partial_update(self, request, pk=None):
+        """
+        Like / Dislike a message.
+        """
+
+        serializer = MessageFeedbackSerializer(
+            data=request.data,
+        )
+
+        serializer.is_valid(
+            raise_exception=True,
+        )
+
+        message = Message.objects.get(
+            id=pk,
+        )
+
+        message = MessageFeedbackService.set_feedback(
+            message=message,
+            liked=serializer.validated_data["liked"],
+        )
+
+        return Response(
+            MessageSerializer(message).data,
+            status=status.HTTP_200_OK,
         )

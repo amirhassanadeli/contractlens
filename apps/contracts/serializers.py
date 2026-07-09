@@ -102,5 +102,11 @@ class MessageSerializer(serializers.ModelSerializer):
             "liked",
             "created_at",
         )
+
+
 class SendMessageSerializer(serializers.Serializer):
     content = serializers.CharField()
+
+
+class MessageFeedbackSerializer(serializers.Serializer):
+    liked = serializers.BooleanField()

@@ -5,6 +5,7 @@ from .views import (
     ContractViewSet,
     ConversationViewSet,
     MessageViewSet,
+    MessageActionViewSet,
 )
 
 router = DefaultRouter()
@@ -33,5 +34,15 @@ urlpatterns = [
             }
         ),
         name="conversation-messages",
+    ),
+
+    path(
+        "messages/<uuid:pk>/feedback/",
+        MessageActionViewSet.as_view(
+            {
+                "patch": "partial_update",
+            }
+        ),
+        name="message-feedback",
     ),
 ]
