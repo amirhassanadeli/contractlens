@@ -30,10 +30,7 @@ urlpatterns = [
         name="swagger-ui",
     ),
 
-    path(
-        "api/contracts/",
-        include("apps.contracts.urls"),
-    ),
+    path("api/", include("apps.contracts.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(

@@ -100,9 +100,6 @@ Context:
             )
 
         return {
-            "id": str(uuid4()),
-            "role": "assistant",
-            "content": response["answer"],
+            "answer": response["answer"],
             "sources": sources,
-            "created_at": timezone.now().isoformat(),
         }

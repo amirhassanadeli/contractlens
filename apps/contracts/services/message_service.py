@@ -4,31 +4,53 @@ from apps.contracts.models import (
     MessageRole,
 )
 
+from .rag_service import RAGService
+
 
 class MessageService:
 
     @staticmethod
-    def create_user_message(
-        conversation: Conversation,
-        content: str,
+    def send_message(
+            conversation: Conversation,
+            content: str,
     ) -> Message:
+        """
+        Save user message, ask the RAG system,
+        save assistant response, and return it.
+        """
 
-        return Message.objects.create(
+        # Save user message
+        Message.objects.create(
             conversation=conversation,
             role=MessageRole.USER,
             content=content,
         )
 
-    @staticmethod
-    def create_assistant_message(
-        conversation: Conversation,
-        content: str,
-        sources: list,
-    ) -> Message:
+        # Ask RAG
+        print("1. User saved")
+        result = RAGService.ask(
+            contract_id=str(conversation.contract.id),
+            question=content,
+        )
 
-        return Message.objects.create(
+        # Save assistant message
+        print("2. RAG Result:", result)
+        assistant_message = Message.objects.create(
             conversation=conversation,
             role=MessageRole.ASSISTANT,
-            content=content,
-            sources=sources,
+            content=result["answer"],
+            sources=result["sources"],
         )
+        print("3. Assistant saved")
+
+        return assistant_message
+
+    @staticmethod
+    def history(
+            conversation: Conversation,
+    ):
+        """
+        Return all messages of a conversation.
+        """
+
+        return conversation.messages.all()

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Contract, Conversation
+from .models import Contract, Conversation, Message
 from pypdf import PdfReader
 
 
@@ -61,10 +61,12 @@ class ContractCreateSerializer(serializers.ModelSerializer):
 
         return file
 
+
 class QuestionSerializer(serializers.Serializer):
     question = serializers.CharField(
         max_length=255,
     )
+
 
 class ConversationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -77,6 +79,7 @@ class ConversationSerializer(serializers.ModelSerializer):
             "updated_at",
         )
 
+
 class ConversationCreateSerializer(serializers.Serializer):
     contract_id = serializers.UUIDField()
 
@@ -84,3 +87,20 @@ class ConversationCreateSerializer(serializers.Serializer):
         required=False,
         allow_blank=True,
     )
+
+
+# MessageSerializer
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+
+        fields = (
+            "id",
+            "role",
+            "content",
+            "sources",
+            "liked",
+            "created_at",
+        )
+class SendMessageSerializer(serializers.Serializer):
+    content = serializers.CharField()
