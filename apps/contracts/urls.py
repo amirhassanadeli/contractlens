@@ -45,4 +45,15 @@ urlpatterns = [
         ),
         name="message-feedback",
     ),
+
+    path(
+        "messages/<uuid:pk>/regenerate/",
+        MessageActionViewSet.as_view(
+            {
+                "post": "regenerate",
+            }
+        ),
+        name="message-regenerate",
+    ),
+
 ]

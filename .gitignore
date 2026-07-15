@@ -1,24 +1,59 @@
+# =========================
+# Python
+# =========================
 .venv/
 .venv13/
 venv/
 
 __pycache__/
 *.py[cod]
+
+# Database
 *.sqlite3
 
+# Environment
 .env
+.env.*
 
+# =========================
+# Django
+# =========================
 media/
-
 static/
+staticfiles/
 
+# Logs
+logs/
+*.log
+
+# Cache
+.pytest_cache/
+.coverage
+.mypy_cache/
+
+# Chroma
+chroma_db/
+
+# IDE
 .idea/
 .vscode/
 
-.pytest_cache/
+# =========================
+# Next.js
+# =========================
+frontend/node_modules/
+frontend/.next/
+frontend/out/
 
-.coverage
+# Turbopack
+frontend/.turbo/
 
-*.log
+# TypeScript
+frontend/*.tsbuildinfo
 
-chroma_db/
+# Vercel
+frontend/.vercel/
+
+# OS
+.DS_Store
+Thumbs.db

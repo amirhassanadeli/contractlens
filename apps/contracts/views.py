@@ -27,6 +27,7 @@ from .services.rag_service import RAGService
 from .services.conversation_service import ConversationService
 from .services.message_service import MessageService
 from .services.message_feedback_service import MessageFeedbackService
+from .services.message_regenerate_service import MessageRegenerateService
 
 
 class ContractViewSet(viewsets.ModelViewSet):
@@ -225,4 +226,30 @@ class MessageActionViewSet(ViewSet):
         return Response(
             MessageSerializer(message).data,
             status=status.HTTP_200_OK,
+        )
+
+    def regenerate(self, request, pk=None):
+        """
+        Regenerate assistant response.
+        """
+
+        print("Regenerate called", pk)
+
+        message = Message.objects.get(
+            id=pk,
+        )
+
+        regenerated_message = (
+            MessageRegenerateService.regenerate(
+                message,
+            )
+        )
+
+        serializer = MessageSerializer(
+            regenerated_message,
+        )
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
         )
