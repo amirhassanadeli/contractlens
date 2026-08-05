@@ -1,17 +1,66 @@
-export function Sidebar() {
+"use client";
+
+import { ContractList } from "./ContractList";
+import { ConversationList } from "./ConversationList";
+
+type SidebarProps = {
+  selectedContractId: string | null;
+
+  onContractSelect: (
+    id: string,
+  ) => void;
+
+  selectedConversationId: string | null;
+
+  onConversationSelect: (
+    id: string,
+  ) => void;
+};
+
+export function Sidebar({
+  selectedContractId,
+  onContractSelect,
+  selectedConversationId,
+  onConversationSelect,
+}: SidebarProps) {
   return (
-    <aside className="w-80 border-r p-4">
-      <h2 className="text-xl font-semibold">
-        ContractLens
-      </h2>
+    <aside className="flex w-80 flex-col border-r bg-white">
 
-      <div className="mt-8">
-        Contracts
+      <div className="border-b p-6">
+
+        <h1 className="text-2xl font-bold">
+          ContractLens
+        </h1>
+
+        <p className="mt-1 text-sm text-gray-500">
+          AI Contract Assistant
+        </p>
+
       </div>
 
-      <div className="mt-8">
-        Conversations
+      <div className="flex-1 overflow-y-auto">
+
+        <ContractList
+          selectedContractId={
+            selectedContractId
+          }
+          onSelect={onContractSelect}
+        />
+
+        <ConversationList
+          contractId={
+            selectedContractId
+          }
+          selectedConversationId={
+            selectedConversationId
+          }
+          onSelect={
+            onConversationSelect
+          }
+        />
+
       </div>
+
     </aside>
   );
 }

@@ -1,0 +1,15 @@
+Django
+djangorestframework
+django-cors-headers
+djangorestframework-stubs
+langchain
+langchain-community
+langchain-chroma
+langchain-ollama
+chromadb
+pypdf
+python-dotenv
+sentence-transformers
+environ
+django_extensions
+drf_spectacular

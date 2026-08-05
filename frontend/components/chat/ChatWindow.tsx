@@ -1,57 +1,72 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ChatHeader } from "./ChatHeader";
-import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
+import { MessageList } from "./MessageList";
 
 import type { Message } from "@/types/message";
 
-import {
-  getMessages,
-  updateFeedback,
-} from "@/services/messages";
+import { getMessages } from "@/services/messages";
 
-export function ChatWindow() {
-  const [conversationId, setConversationId] =
-    useState<string | null>(null);
+type ChatWindowProps = {
+  contractId: string | null;
 
+  conversationId: string | null;
+
+  onConversationCreated: (
+    id: string,
+  ) => void;
+};
+
+export function ChatWindow({
+  contractId,
+  conversationId,
+  onConversationCreated,
+}: ChatWindowProps) {
   const [messages, setMessages] =
     useState<Message[]>([]);
 
   const [loading, setLoading] =
     useState(false);
 
-  const loadMessages = useCallback(async () => {
-    if (!conversationId) return;
-
-    try {
-      setLoading(true);
-
-      const data =
-        await getMessages(conversationId);
-
-      setMessages(data);
-
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (!conversationId) {
+      setMessages([]);
+      return;
     }
+
+    async function loadMessages() {
+      try {
+        setLoading(true);
+
+        const data =
+          await getMessages(
+            conversationId,
+          );
+
+        console.log(
+          "Messages:",
+          data,
+        );
+
+        setMessages(data);
+
+      } catch (error) {
+        console.error(error);
+
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadMessages();
   }, [conversationId]);
 
-  useEffect(() => {
-    loadMessages();
-  }, [loadMessages]);
-
-  const handleLike = async (
+  function handleLike(
     messageId: string,
-  ) => {
-
-    console.log("👍 Like:", messageId);
-
-    // Optimistic UI
+  ) {
     setMessages((prev) =>
       prev.map((message) =>
         message.id === messageId
@@ -59,52 +74,14 @@ export function ChatWindow() {
               ...message,
               liked: true,
             }
-          : message
-      )
+          : message,
+      ),
     );
+  }
 
-    try {
-
-      const updated =
-        await updateFeedback(
-          messageId,
-          true,
-        );
-
-      console.log(
-        "✅ Backend:",
-        updated,
-      );
-
-    } catch (error) {
-
-      console.error(
-        "❌ Like failed:",
-        error,
-      );
-
-      // Rollback
-      setMessages((prev) =>
-        prev.map((message) =>
-          message.id === messageId
-            ? {
-                ...message,
-                liked: null,
-              }
-            : message
-        )
-      );
-
-    }
-
-  };
-
-  const handleDislike = async (
+  function handleDislike(
     messageId: string,
-  ) => {
-
-    console.log("👎 Dislike:", messageId);
-
+  ) {
     setMessages((prev) =>
       prev.map((message) =>
         message.id === messageId
@@ -112,88 +89,74 @@ export function ChatWindow() {
               ...message,
               liked: false,
             }
-          : message
-      )
+          : message,
+      ),
     );
+  }
 
-    try {
+  function handleRegenerated(
+    message: Message,
+  ) {
+    if (!message) return;
 
-      const updated =
-        await updateFeedback(
-          messageId,
-          false,
-        );
+    setMessages((prev) => [
+      ...prev,
+      message,
+    ]);
+  }
 
-      console.log(
-        "✅ Backend:",
-        updated,
-      );
-
-    } catch (error) {
-
+  function handleAssistant(
+    assistant: Message,
+  ) {
+    if (!assistant) {
       console.error(
-        "❌ Dislike failed:",
-        error,
+        "Assistant message is undefined",
       );
-
-      setMessages((prev) =>
-        prev.map((message) =>
-          message.id === messageId
-            ? {
-                ...message,
-                liked: null,
-              }
-            : message
-        )
-      );
-
+      return;
     }
 
-  };
+    console.log(
+      "Assistant:",
+      assistant,
+    );
+
+    setMessages((prev) => [
+      ...prev,
+      assistant,
+    ]);
+  }
 
   return (
     <main className="flex flex-1 flex-col">
 
       <ChatHeader />
 
-      <div className="flex-1 overflow-hidden">
+      <MessageList
+        messages={messages}
+        onLike={handleLike}
+        onDislike={handleDislike}
+        onRegenerated={
+          handleRegenerated
+        }
+      />
 
-        {loading ? (
-          <div className="flex h-full items-center justify-center">
-            Loading...
-          </div>
-        ) : (
-          <MessageList
-            messages={messages}
-
-            onLike={handleLike}
-
-            onDislike={handleDislike}
-
-            onRegenerated={(message) => {
-
-              console.log(
-                "➕ Add regenerated message:",
-                message,
-              );
-
-              setMessages((prev) => [
-                ...prev,
-                message,
-              ]);
-
-            }}
-          />
-        )}
-
-      </div>
+      {loading && (
+        <div className="border-t p-3 text-sm text-gray-500">
+          Loading...
+        </div>
+      )}
 
       <ChatInput
-        conversationId={conversationId}
-        onConversationCreated={
-          setConversationId
+        contractId={contractId}
+        conversationId={
+          conversationId
         }
-        onMessageSent={loadMessages}
+        onConversationCreated={
+          onConversationCreated
+        }
+        onMessageSent={
+          handleAssistant
+        }
       />
 
     </main>

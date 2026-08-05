@@ -3,7 +3,5 @@ export type Contract = {
   title: string;
   language: string;
   status: string;
-
   created_at: string;
-  updated_at: string;
 };

@@ -33,6 +33,7 @@ logs/
 
 # Chroma
 chroma_db/
+data/
 
 # IDE
 .idea/

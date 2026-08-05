@@ -1,5 +1,17 @@
 const API = "http://127.0.0.1:8000/api";
 
+export async function getContracts() {
+  const response = await fetch(
+    `${API}/contracts/`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to load contracts");
+  }
+
+  return response.json();
+}
+
 export async function uploadContract(
   file: File,
 ) {
@@ -23,9 +35,7 @@ export async function uploadContract(
   );
 
   if (!response.ok) {
-    throw new Error(
-      `Upload failed (${response.status})`,
-    );
+    throw new Error("Upload failed");
   }
 
   return response.json();

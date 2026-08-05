@@ -3,21 +3,28 @@
 import { useRef, useState } from "react";
 import { Paperclip, Send } from "lucide-react";
 
+import type { Message } from "@/types/message";
+
 import { uploadContract } from "@/services/contracts";
 import { createConversation } from "@/services/conversations";
 import { sendMessage } from "@/services/messages";
 
 type ChatInputProps = {
+  contractId: string | null;
+
   conversationId: string | null;
 
   onConversationCreated: (
     id: string,
   ) => void;
 
-  onMessageSent: () => Promise<void>;
+  onMessageSent: (
+    assistant: Message,
+  ) => void;
 };
 
 export function ChatInput({
+  contractId,
   conversationId,
   onConversationCreated,
   onMessageSent,
@@ -57,7 +64,7 @@ export function ChatInput({
         "Sending message...",
       );
 
-      const response =
+      const assistant =
         await sendMessage(
           conversationId,
           message,
@@ -65,12 +72,12 @@ export function ChatInput({
 
       console.log(
         "Assistant:",
-        response,
+        assistant,
       );
 
       setMessage("");
 
-      await onMessageSent();
+      onMessageSent(assistant);
 
     } catch (error) {
       console.error(
@@ -163,7 +170,9 @@ export function ChatInput({
           onChange={(e) =>
             setMessage(e.target.value)
           }
-          disabled={sending}
+          disabled={
+            sending || uploading
+          }
         />
 
         <button
