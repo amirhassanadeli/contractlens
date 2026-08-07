@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 
 
+# ========== Contract ================================================
 class ContractStatus(models.TextChoices):
     UPLOADED = "UPLOADED", "Uploaded"
     PROCESSING = "PROCESSING", "Processing"
@@ -68,6 +69,8 @@ class Contract(models.Model):
         return self.title
 
 
+# ========== Conversation ================================================
+
 class Conversation(models.Model):
     id = models.UUIDField(
         primary_key=True,
@@ -101,6 +104,7 @@ class Conversation(models.Model):
         return self.title or f"Conversation {self.id}"
 
 
+# ========== Message ================================================
 class Message(models.Model):
     id = models.UUIDField(
         primary_key=True,

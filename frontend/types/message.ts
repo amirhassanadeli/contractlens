@@ -1,19 +1,19 @@
 export type Message = {
-  id: string;
+    id: string;
 
-  role: "USER" | "ASSISTANT";
-  
-  content: string;
+    role: "USER" | "ASSISTANT";
 
-  sources: {
-    filename: string;
-    page: number;
-    excerpt: string;
-  }[];
+    content: string;
 
-  liked: boolean | null;
+    sources: {
+        filename: string;
+        page: number;
+        excerpt: string;
+    }[];
 
-  regenerated_from?: string | null;
+    liked: boolean | null;
 
-  created_at: string;
+    regenerated_from?: string | null;
+
+    created_at: string;
 };

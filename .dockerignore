@@ -1,0 +1,31 @@
+# Git
+.git
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Database
+db.sqlite3
+
+# Chroma
+chroma_db/
+
+# Logs
+logs/
+
+# Media
+media/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store

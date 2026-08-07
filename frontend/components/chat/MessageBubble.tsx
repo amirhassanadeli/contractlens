@@ -1,120 +1,120 @@
 "use client";
 
-import type { Message } from "@/types/message";
+import type {Message} from "@/types/message";
 
-import { MessageActions } from "./MessageActions";
+import {MessageActions} from "./MessageActions";
 
-import { copyToClipboard } from "@/lib/clipboard";
+import {copyToClipboard} from "@/lib/clipboard";
 
 import {
-  regenerateMessage,
+    regenerateMessage,
 } from "@/services/messages";
 
 type MessageBubbleProps = {
-  message: Message;
+    message: Message;
 
-  onLike: (
-    messageId: string,
-  ) => void;
+    onLike: (
+        messageId: string,
+    ) => void;
 
-  onDislike: (
-    messageId: string,
-  ) => void;
+    onDislike: (
+        messageId: string,
+    ) => void;
 
-  onRegenerated: (
-    message: Message,
-  ) => void;
+    onRegenerated: (
+        message: Message,
+    ) => void;
 };
 
 export function MessageBubble({
-  message,
-  onLike,
-  onDislike,
-  onRegenerated,
-}: MessageBubbleProps) {
+                                  message,
+                                  onLike,
+                                  onDislike,
+                                  onRegenerated,
+                              }: MessageBubbleProps) {
 
-  const isUser =
-    message.role === "USER";
+    const isUser =
+        message.role === "USER";
 
-  return (
-    <div
-      className={`mb-6 flex ${
-        isUser
-          ? "justify-end"
-          : "justify-start"
-      }`}
-    >
-      <div
-        className={`max-w-3xl rounded-2xl px-4 py-3 ${
-          isUser
-            ? "bg-black text-white"
-            : "bg-gray-100 text-black"
-        }`}
-      >
-        <p>{message.content}</p>
+    return (
+        <div
+            className={`mb-6 flex ${
+                isUser
+                    ? "justify-end"
+                    : "justify-start"
+            }`}
+        >
+            <div
+                className={`max-w-3xl rounded-2xl px-4 py-3 ${
+                    isUser
+                        ? "bg-black text-white"
+                        : "bg-gray-100 text-black"
+                }`}
+            >
+                <p>{message.content}</p>
 
-        {!isUser && (
-          <MessageActions
+                {!isUser && (
+                    <MessageActions
 
-            liked={message.liked}
+                        liked={message.liked}
 
-            onLike={() =>
-              onLike(message.id)
-            }
+                        onLike={() =>
+                            onLike(message.id)
+                        }
 
-            onDislike={() =>
-              onDislike(message.id)
-            }
+                        onDislike={() =>
+                            onDislike(message.id)
+                        }
 
-            onCopy={async () => {
-              try {
+                        onCopy={async () => {
+                            try {
 
-                await copyToClipboard(
-                  message.content,
-                );
+                                await copyToClipboard(
+                                    message.content,
+                                );
 
-              } catch (error) {
+                            } catch (error) {
 
-                console.error(error);
+                                console.error(error);
 
-              }
-            }}
+                            }
+                        }}
 
-            onRegenerate={async () => {
-              try {
+                        onRegenerate={async () => {
+                            try {
 
-                console.log(
-                  "🔄 Regenerating:",
-                  message.id,
-                );
+                                console.log(
+                                    "🔄 Regenerating:",
+                                    message.id,
+                                );
 
-                const regenerated =
-                  await regenerateMessage(
-                    message.id,
-                  );
+                                const regenerated =
+                                    await regenerateMessage(
+                                        message.id,
+                                    );
 
-                console.log(
-                  "✅ Regenerated:",
-                  regenerated,
-                );
+                                console.log(
+                                    "✅ Regenerated:",
+                                    regenerated,
+                                );
 
-                onRegenerated(
-                  regenerated,
-                );
+                                onRegenerated(
+                                    regenerated,
+                                );
 
-              } catch (error) {
+                            } catch (error) {
 
-                console.error(
-                  "❌ Regenerate failed:",
-                  error,
-                );
+                                console.error(
+                                    "❌ Regenerate failed:",
+                                    error,
+                                );
 
-              }
-            }}
-          />
-        )}
+                            }
+                        }}
+                    />
+                )}
 
-      </div>
-    </div>
-  );
+            </div>
+        </div>
+    );
 }

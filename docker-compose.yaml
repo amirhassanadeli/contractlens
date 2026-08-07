@@ -1,0 +1,47 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: contractlens-backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+    volumes:
+      # دیتابیس SQLite
+      - ./db.sqlite3:/app/db.sqlite3
+
+      # نگهداری فایل‌های آپلودشده
+      - ./media:/app/media
+
+      # نگهداری دیتابیس Chroma
+      - ./chroma_db:/app/chroma_db
+
+      # نگهداری لاگ‌ها
+      - ./logs:/app/logs
+
+    ports:
+      - "8000:8000"
+
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: contractlens-frontend
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - backend
+
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

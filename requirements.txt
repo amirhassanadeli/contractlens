@@ -1,4 +1,4 @@
-Django
+Django==6.0.7
 djangorestframework
 django-cors-headers
 djangorestframework-stubs
@@ -10,6 +10,9 @@ chromadb
 pypdf
 python-dotenv
 sentence-transformers
-environ
+django-environ
 django_extensions
 drf_spectacular
+pillow
+python-decouple
+gunicorn
