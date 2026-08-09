@@ -1,22 +1,37 @@
-FROM python:3.13-slim
+# Stage 1: Base build stage
+FROM python:3.13-slim AS builder
+
+RUN mkdir -p /app
+WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        gcc \
-        libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-
+RUN pip install --upgrade pip
+COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Stage 2: Production stage
+FROM python:3.13-slim
+
+RUN useradd -m -r appuser && \
+    mkdir -p /app && \
+    chown -R appuser:appuser /app
+
+COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+WORKDIR /app
+
+COPY --chown=appuser:appuser . .
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+RUN chmod +x /app/entrypoint.prod.sh
+
+USER appuser
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["/app/entrypoint.prod.sh"]

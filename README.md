@@ -133,7 +133,7 @@ Frontend will be available at `http://localhost:3000`
 
 ## Environment Variables
 
-Create a `.env` file in the project root (or configure in Django settings):
+Create a `.env.local` file in the project root (or configure in Django settings):
 
 ```env
 LLM_MODEL=qwen2.5:7b

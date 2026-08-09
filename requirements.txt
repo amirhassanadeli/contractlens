@@ -1,7 +1,9 @@
 Django==6.0.7
+gunicorn
 djangorestframework
 django-cors-headers
 djangorestframework-stubs
+psycopg[binary]
 langchain
 langchain-community
 langchain-chroma
@@ -15,4 +17,4 @@ django_extensions
 drf_spectacular
 pillow
 python-decouple
-gunicorn
+dj_database_url

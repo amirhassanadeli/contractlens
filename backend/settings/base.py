@@ -1,43 +1,23 @@
 import os
-from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
 
-import environ
-
+load_dotenv(".env.local")
 # ---------------------------------------------------------
 # Base Directory
 # ---------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # ---------------------------------------------------------
-# Environment Variables
-# ---------------------------------------------------------
-import environ
-
-env = environ.Env(
-    DEBUG=(bool, False),
-)
-
-env_file = os.path.join(BASE_DIR, ".env")
-if os.path.exists(env_file):
-    environ.Env.read_env(env_file)
-
-ENV = env("ENV", default="local")
-
-env_specific = os.path.join(BASE_DIR, f".env.{ENV}")
-if os.path.exists(env_specific):
-    environ.Env.read_env(env_specific)
-
-# ---------------------------------------------------------
 # Security
 # ---------------------------------------------------------
-SECRET_KEY = 'django-insecure-@%t4b&zt^+r5(n+j)27tp=(^$vkv+un7&%vp50l+j10^u0xvq('
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.getenv("DEBUG", default=0))
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
-
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1').split(",")
 # ---------------------------------------------------------
 # Applications
 # ---------------------------------------------------------
@@ -65,6 +45,7 @@ INSTALLED_APPS = [
 # ---------------------------------------------------------
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.security.SecurityMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -104,10 +85,17 @@ TEMPLATES = [
 # ---------------------------------------------------------
 # Database
 # ---------------------------------------------------------
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.{}".format(
+            os.getenv("DATABASE_ENGINE", "sqlite3")
+        ),
+        "NAME": os.getenv("DATABASE_NAME", "polls"),
+        "USER": os.getenv("DATABASE_USER", "myprojectuser"),
+        "PASSWORD": os.getenv("DATABASE_PASSWORD", "password"),
+        "HOST": os.getenv("DATABASE_HOST", "127.0.0.1"),
+        "PORT": os.getenv("DATABASE_PORT", "5432"),
     }
 }
 
@@ -153,50 +141,17 @@ USE_TZ = True
 # ---------------------------------------------------------
 # Static & Media Files
 # ---------------------------------------------------------
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "static"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
+
 
 # ---------------------------------------------------------
 # Default PK
 # ---------------------------------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# ---------------------------------------------------------
-# CORS
-# ---------------------------------------------------------
-
-CORS_ALLOW_CREDENTIALS = True
-
-if ENV == "server":
-
-    CORS_ALLOW_ALL_ORIGINS = False
-
-    CORS_ALLOWED_ORIGINS = env.list(
-        "CORS_ALLOWED_ORIGINS",
-        default=[]
-    )
-
-    CSRF_TRUSTED_ORIGINS = env.list(
-        "CSRF_TRUSTED_ORIGINS",
-        default=[]
-    )
-
-else:
-
-    CORS_ALLOW_ALL_ORIGINS = True
-
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
-
-    CSRF_TRUSTED_ORIGINS = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
 
 # ---------------------------------------------------------
 # Config
