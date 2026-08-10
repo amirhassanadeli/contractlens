@@ -2,8 +2,10 @@
 # Python
 # =========================
 .venv/
-.venv13/
+.venv*/
+
 venv/
+venv*/
 
 __pycache__/
 *.py[cod]
@@ -18,9 +20,11 @@ __pycache__/
 # =========================
 # Django
 # =========================
-media/
 static/
 staticfiles/
+
+media/
+mediafiles/
 
 # Logs
 logs/

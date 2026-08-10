@@ -17,7 +17,7 @@ chroma_db/
 logs/
 
 # Media
-media/
+mediafiles/
 
 # Frontend
 frontend/node_modules/

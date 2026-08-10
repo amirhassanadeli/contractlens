@@ -25,6 +25,7 @@ class RAGService:
         """
         return ChatOllama(
             model=settings.LLM_MODEL,
+            base_url=settings.LLM_BASE_URL,
             temperature=settings.TEMPERATURE,
         )
 

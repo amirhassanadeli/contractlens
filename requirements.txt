@@ -1,8 +1,9 @@
 Django==6.0.7
-gunicorn
 djangorestframework
 django-cors-headers
 djangorestframework-stubs
+gunicorn
+whitenoise
 psycopg[binary]
 langchain
 langchain-community

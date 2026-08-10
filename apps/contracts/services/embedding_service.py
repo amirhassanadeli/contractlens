@@ -11,7 +11,8 @@ class EmbeddingService:
     @staticmethod
     def _get_embeddings() -> OllamaEmbeddings:
         return OllamaEmbeddings(
-            model=settings.EMBEDDING_MODEL
+            model=settings.EMBEDDING_MODEL,
+            base_url=settings.LLM_BASE_URL,
         )
 
     @classmethod

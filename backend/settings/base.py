@@ -144,9 +144,8 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "/media/"
+MEDIA_URL = "/mediafiles/"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
-
 
 # ---------------------------------------------------------
 # Default PK
@@ -157,8 +156,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Config
 # ---------------------------------------------------------
 # Ollama
-EMBEDDING_MODEL = "nomic-embed-text"
 LLM_MODEL = "qwen2.5:7b"
+LLM_BASE_URL = "http://ollama:11434"
+EMBEDDING_MODEL = "nomic-embed-text"
 TEMPERATURE = 0.2
 
 # Chunking
