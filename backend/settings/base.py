@@ -156,8 +156,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Config
 # ---------------------------------------------------------
 # Ollama
-LLM_MODEL = "qwen2.5:7b"
-LLM_BASE_URL = "http://ollama:11434"
+LLM_MODEL = os.getenv("LLM_MODEL", "qwen2.5:7b")
+LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://ollama:11434")
 EMBEDDING_MODEL = "nomic-embed-text"
 TEMPERATURE = 0.2
 

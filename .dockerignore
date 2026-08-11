@@ -1,31 +1,86 @@
+# =========================
 # Git
-.git
+# =========================
+.git/
+.gitignore
+.gitattributes
 
+# =========================
+# Environment files
+# =========================
+.env
+.env*
+
+# =========================
 # Python
+# =========================
 .venv/
 venv/
+env/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
 
-# Database
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Django
+# =========================
 db.sqlite3
-
-# Chroma
-chroma_db/
-
-# Logs
-logs/
-
-# Media
+staticfiles/
 mediafiles/
 
-# Frontend
+# =========================
+# Chroma / Vector DB
+# =========================
+chroma_db/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Frontend / Next.js
+# =========================
 frontend/node_modules/
 frontend/.next/
+frontend/out/
+frontend/.turbo/
+frontend/.vercel/
 
+# =========================
+# Package manager caches
+# =========================
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/install-state.gz
+
+# =========================
+# Docker
+# =========================
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# =========================
 # IDE
+# =========================
 .idea/
 .vscode/
+*.swp
+*.swo
 
-# macOS
+# =========================
+# OS
+# =========================
 .DS_Store
+Thumbs.db
