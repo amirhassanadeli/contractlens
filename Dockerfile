@@ -1,7 +1,6 @@
 # Stage 1: Base build stage
 FROM python:3.13-slim AS builder
 
-RUN mkdir -p /app
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -14,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python:3.13-slim
 
 RUN useradd -m -r appuser && \
-    mkdir -p /app /app/staticfiles /app/mediafiles  /app/logs && \
+    mkdir -p /app /app/staticfiles /app/mediafiles /app/logs /app/chroma_db && \
     chown -R appuser:appuser /app
 
 COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
@@ -35,4 +34,3 @@ USER appuser
 EXPOSE 8000
 
 CMD ["/app/entrypoint.prod.sh"]
-
