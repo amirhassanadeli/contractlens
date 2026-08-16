@@ -15,7 +15,7 @@
 # Python
 # =========================
 .venv/
-venv/
+venv*/
 env/
 __pycache__/
 *.py[cod]
@@ -45,24 +45,6 @@ chroma_db/
 # =========================
 logs/
 *.log
-
-# =========================
-# Frontend / Next.js
-# =========================
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-frontend/.turbo/
-frontend/.vercel/
-
-# =========================
-# Package manager caches
-# =========================
-.npm/
-.pnpm-store/
-.yarn/cache/
-.yarn/unplugged/
-.yarn/install-state.gz
 
 # =========================
 # Docker

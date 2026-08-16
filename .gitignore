@@ -43,22 +43,6 @@ data/
 .idea/
 .vscode/
 
-# =========================
-# Next.js
-# =========================
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-
-# Turbopack
-frontend/.turbo/
-
-# TypeScript
-frontend/*.tsbuildinfo
-
-# Vercel
-frontend/.vercel/
-
 # OS
 .DS_Store
 Thumbs.db

@@ -2,6 +2,7 @@ Django==6.0.7
 djangorestframework
 django-cors-headers
 djangorestframework-stubs
+djangorestframework-simplejwt
 gunicorn
 whitenoise
 psycopg[binary]

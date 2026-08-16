@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # Base Directory
 # =========================================================
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # =========================================================
 # Environment
@@ -25,23 +25,11 @@ else:
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG", "False").lower() in (
-    "true",
-    "1",
-    "yes",
-)
+DEBUG = os.getenv("DEBUG")
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv("ALLOWED_HOSTS", "").split(",")
-    if host.strip()
-]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
-    if origin.strip()
-]
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
 
 # =========================================================
 # Applications
@@ -181,12 +169,14 @@ USE_TZ = True
 # Static & Media Files
 # =========================================================
 
-STATIC_URL = "/static/"
+FORCE_SCRIPT_NAME = '/contracts'
+
+# Static & Media
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "/mediafiles/"
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "mediafiles"
-
 # =========================================================
 # Default Primary Key
 # =========================================================
