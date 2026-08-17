@@ -1,3 +1,4 @@
+"""Message Feedback Service"""
 from apps.contracts.models import Message
 
 

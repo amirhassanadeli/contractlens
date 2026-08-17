@@ -1,3 +1,4 @@
+"""Contract Service.py"""
 from .models import Contract
 
 

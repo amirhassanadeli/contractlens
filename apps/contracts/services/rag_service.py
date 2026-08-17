@@ -1,6 +1,4 @@
-from uuid import uuid4
-from django.utils import timezone
-
+"""RAG Service"""
 from django.conf import settings
 
 from langchain_core.prompts import ChatPromptTemplate

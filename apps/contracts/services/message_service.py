@@ -1,3 +1,4 @@
+"""Message Service"""
 from apps.contracts.models import (
     Conversation,
     Message,

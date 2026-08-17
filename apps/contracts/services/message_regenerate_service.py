@@ -1,3 +1,4 @@
+"""MessageRegenerateService"""
 from apps.contracts.models import (
     Message,
     MessageRole,

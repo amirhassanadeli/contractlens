@@ -1,3 +1,4 @@
+"""Conversation Service.py"""
 from apps.contracts.models import (
     Contract,
     Conversation,

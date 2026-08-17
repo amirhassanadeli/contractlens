@@ -1,3 +1,4 @@
+"""ContractService"""
 from apps.contracts.models import Contract
 
 from .pdf_service import PDFService
