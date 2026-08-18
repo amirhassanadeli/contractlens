@@ -1,29 +1,19 @@
+import logging
+from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
-from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.viewsets import ViewSet
+from rest_framework.response import Response
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-
-from .models import (
-    Contract,
-    Conversation,
-    Message,
-)
+from .models import Contract, Conversation, Message
 from .serializers import (
     ContractCreateSerializer,
     ContractListSerializer,
     QuestionSerializer,
-
     ConversationSerializer,
     ConversationCreateSerializer,
-
     MessageSerializer,
     SendMessageSerializer,
-
     MessageFeedbackSerializer,
-
 )
 from .services.contract_service import ContractService
 from .services.rag_service import RAGService
@@ -32,27 +22,28 @@ from .services.message_service import MessageService
 from .services.message_feedback_service import MessageFeedbackService
 from .services.message_regenerate_service import MessageRegenerateService
 
+logger = logging.getLogger(__name__)
+
 
 class ContractViewSet(viewsets.ModelViewSet):
-    queryset = Contract.objects.all()
+    def get_queryset(self):
+        return Contract.objects.filter(owner=self.request.user)
 
     def get_serializer_class(self):
         if self.action == "create":
             return ContractCreateSerializer
-
         if self.action == "chat":
             return QuestionSerializer
-
         return ContractListSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        contract = ContractService.create_contract(
-            serializer.validated_data
-        )
+        data = serializer.validated_data.copy()
+        data["owner"] = request.user
 
+        contract = ContractService.create_contract(data)
         response_serializer = ContractListSerializer(contract)
 
         return Response(
@@ -60,19 +51,10 @@ class ContractViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    @action(
-        detail=True,
-        methods=["post"],
-        url_path="chat",
-    )
+    @action(detail=True, methods=["post"], url_path="chat")
     def chat(self, request, pk=None):
-        serializer = QuestionSerializer(
-            data=request.data
-        )
-
-        serializer.is_valid(
-            raise_exception=True
-        )
+        serializer = QuestionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         contract = self.get_object()
 
@@ -81,67 +63,45 @@ class ContractViewSet(viewsets.ModelViewSet):
             question=serializer.validated_data["question"],
         )
 
-        return Response(
-            result,
-            status=status.HTTP_200_OK,
-        )
+        return Response(result, status=status.HTTP_200_OK)
 
 
-@action(
-    detail=True,
-    methods=["get", "post"],
-    url_path="conversations",
-)
 class ConversationViewSet(viewsets.ViewSet):
 
     def list(self, request):
-        print(request.query_params)
         contract_id = request.query_params.get("contract_id")
 
         if not contract_id:
             return Response(
-                {
-                    "detail": "contract_id is required."
-                },
+                {"detail": "contract_id is required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        contract = Contract.objects.get(id=contract_id)
-
-        conversations = ConversationService.list(contract)
-
-        serializer = ConversationSerializer(
-            conversations,
-            many=True,
+        contract = get_object_or_404(
+            Contract,
+            id=contract_id,
+            owner=request.user,
         )
-
+        conversations = ConversationService.list(contract)
+        serializer = ConversationSerializer(conversations, many=True)
         return Response(serializer.data)
 
     def create(self, request):
-        serializer = ConversationCreateSerializer(
-            data=request.data,
-        )
+        serializer = ConversationCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        serializer.is_valid(
-            raise_exception=True,
-        )
-
-        contract = Contract.objects.get(
+        contract = get_object_or_404(
+            Contract,
             id=serializer.validated_data["contract_id"],
+            owner=request.user,
         )
 
         conversation = ConversationService.create(
             contract=contract,
-            title=serializer.validated_data.get(
-                "title",
-                "",
-            ),
+            title=serializer.validated_data.get("title", ""),
         )
 
-        response_serializer = ConversationSerializer(
-            conversation,
-        )
-
+        response_serializer = ConversationSerializer(conversation)
         return Response(
             response_serializer.data,
             status=status.HTTP_201_CREATED,
@@ -151,40 +111,24 @@ class ConversationViewSet(viewsets.ViewSet):
 class MessageViewSet(viewsets.ViewSet):
 
     def list(self, request, conversation_pk=None):
-        """
-        Return conversation history.
-        """
-
-        conversation = Conversation.objects.get(
+        conversation = get_object_or_404(
+            Conversation,
             id=conversation_pk,
+            contract__owner=request.user,
         )
 
-        messages = MessageService.history(
-            conversation,
-        )
-
-        serializer = MessageSerializer(
-            messages,
-            many=True,
-        )
-
+        messages = MessageService.history(conversation)
+        serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
 
     def create(self, request, conversation_pk=None):
-        """
-        Send a message.
-        """
+        serializer = SendMessageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        serializer = SendMessageSerializer(
-            data=request.data,
-        )
-
-        serializer.is_valid(
-            raise_exception=True,
-        )
-
-        conversation = Conversation.objects.get(
+        conversation = get_object_or_404(
+            Conversation,
             id=conversation_pk,
+            contract__owner=request.user,
         )
 
         message = MessageService.send_message(
@@ -192,33 +136,22 @@ class MessageViewSet(viewsets.ViewSet):
             content=serializer.validated_data["content"],
         )
 
-        response = MessageSerializer(
-            message,
-        )
-
         return Response(
-            response.data,
+            MessageSerializer(message).data,
             status=status.HTTP_201_CREATED,
         )
 
 
-class MessageActionViewSet(ViewSet):
+class MessageActionViewSet(viewsets.ViewSet):
 
     def partial_update(self, request, pk=None):
-        """
-        Like / Dislike a message.
-        """
+        serializer = MessageFeedbackSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        serializer = MessageFeedbackSerializer(
-            data=request.data,
-        )
-
-        serializer.is_valid(
-            raise_exception=True,
-        )
-
-        message = Message.objects.get(
+        message = get_object_or_404(
+            Message,
             id=pk,
+            conversation__contract__owner=request.user,
         )
 
         message = MessageFeedbackService.set_feedback(
@@ -231,28 +164,17 @@ class MessageActionViewSet(ViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @action(detail=True, methods=["post"], url_path="regenerate")
     def regenerate(self, request, pk=None):
-        """
-        Regenerate assistant response.
-        """
-
-        print("Regenerate called", pk)
-
-        message = Message.objects.get(
+        message = get_object_or_404(
+            Message,
             id=pk,
+            conversation__contract__owner=request.user,
         )
 
-        regenerated_message = (
-            MessageRegenerateService.regenerate(
-                message,
-            )
-        )
-
-        serializer = MessageSerializer(
-            regenerated_message,
-        )
+        regenerated_message = MessageRegenerateService.regenerate(message)
 
         return Response(
-            serializer.data,
+            MessageSerializer(regenerated_message).data,
             status=status.HTTP_201_CREATED,
         )

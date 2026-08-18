@@ -4,7 +4,7 @@ set -e
 
 python manage.py makemigrations
 python manage.py migrate --noinput
-python manage.py collectstatic --noinput
+python manage.py collectstatic --clear --noinput
 
 python create_superuser.py
 

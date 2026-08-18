@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "corsheaders",
 
     # Local Apps
+    "apps.accounts.apps.AccountsConfig",
     "apps.contracts.apps.ContractsConfig",
 ]
 
@@ -65,12 +66,12 @@ INSTALLED_APPS = [
 # =========================================================
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
+
 }
 
 from datetime import timedelta
@@ -83,7 +84,7 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
 
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": os.getenv("JWT_SIGNING_KEY"),
+    "SIGNING_KEY": os.getenv("JWT_SIGNING_KEY", default=SECRET_KEY),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "USER_ID_FIELD": "id",
@@ -197,7 +198,7 @@ USE_TZ = True
 # Static & Media Files
 # =========================================================
 
-FORCE_SCRIPT_NAME = '/contracts'
+FORCE_SCRIPT_NAME = os.getenv("FORCE_SCRIPT_NAME", "")
 
 # Static & Media
 STATIC_URL = '/static/'
@@ -215,12 +216,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ContractLens RAG Configuration
 # =========================================================
 
-LLM_MODEL = os.getenv(
-    "LLM_MODEL",
-    "qwen2.5:7b",
-)
-
 LLM_BASE_URL = os.getenv("LLM_BASE_URL")
+
+LLM_MODEL = os.getenv("LLM_MODEL")
 
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 
