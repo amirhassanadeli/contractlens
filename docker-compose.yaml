@@ -35,7 +35,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./static:/app/staticfiles
+      - ./staticfiles:/app/staticfiles
       - ./mediafiles:/app/mediafiles
     networks:
       - shared-network

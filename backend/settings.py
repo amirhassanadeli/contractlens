@@ -25,7 +25,7 @@ else:
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG")
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
@@ -169,13 +169,15 @@ USE_TZ = True
 # Static & Media Files
 # =========================================================
 
-FORCE_SCRIPT_NAME = '/contracts'
+if ENVIRONMENT == "production":
+    FORCE_SCRIPT_NAME = "/contracts"
+else:
+    FORCE_SCRIPT_NAME = None
 
-# Static & Media
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
 # =========================================================
 # Default Primary Key
@@ -187,12 +189,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ContractLens RAG Configuration
 # =========================================================
 
-LLM_MODEL = os.getenv(
-    "LLM_MODEL",
-    "qwen2.5:7b",
-)
-
 LLM_BASE_URL = os.getenv("LLM_BASE_URL")
+
+LLM_MODEL = os.getenv("LLM_MODEL")
 
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 

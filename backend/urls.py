@@ -3,19 +3,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from django.http import JsonResponse
-
-
-def root_view(request):
-    return JsonResponse({
-        "message": "ContractLens API",
-        "docs": "/contracts/api/docs/",
-        "admin": "/contracts/admin/"
-    })
-
 
 urlpatterns = [
-    path('', root_view),
     path('admin/', admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
