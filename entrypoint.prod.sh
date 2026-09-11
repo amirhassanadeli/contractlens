@@ -1,14 +1,15 @@
-#!/bin/sh
-set -e
 #!/bin/bash
+set -e
 
-python manage.py makemigrations
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
 python create_superuser.py
 
-gunicorn --workers=4 \
-         --timeout=600 \
-         --bind=0.0.0.0:8000 \
-         backend.wsgi:application
+exec gunicorn \
+    --workers=4 \
+    --timeout=600 \
+    --bind=0.0.0.0:8000 \
+    --access-logfile - \
+    --error-logfile - \
+    backend.wsgi:application

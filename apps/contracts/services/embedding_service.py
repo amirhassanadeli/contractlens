@@ -2,7 +2,13 @@ from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_ollama import OllamaEmbeddings
 
-from django.conf import settings
+from backend.settings import (
+    EMBEDDING_MODEL,
+    LLM_BASE_URL,
+    CHROMA_DIR,
+    TOP_K,
+    FETCH_K,
+)
 
 
 class EmbeddingService:
@@ -11,8 +17,8 @@ class EmbeddingService:
     @staticmethod
     def _get_embeddings() -> OllamaEmbeddings:
         return OllamaEmbeddings(
-            model=settings.EMBEDDING_MODEL,
-            base_url=settings.LLM_BASE_URL,
+            model=EMBEDDING_MODEL,
+            base_url=LLM_BASE_URL,
         )
 
     @classmethod
@@ -23,7 +29,7 @@ class EmbeddingService:
 
         if cls._vector_store is None:
             cls._vector_store = Chroma(
-                persist_directory=str(settings.CHROMA_DIR),
+                persist_directory=str(CHROMA_DIR),
                 embedding_function=cls._get_embeddings(),
             )
 
@@ -36,7 +42,7 @@ class EmbeddingService:
             chunks: list[Document],
     ) -> None:
         """
-        Add chunks to Chroma.
+        Add & save chunks to Chroma.
         """
 
         for index, chunk in enumerate(chunks):
@@ -62,8 +68,8 @@ class EmbeddingService:
         return vector_store.as_retriever(
             search_type="mmr",
             search_kwargs={
-                "k": settings.TOP_K,
-                "fetch_k": settings.FETCH_K,
+                "k": TOP_K,
+                "fetch_k": FETCH_K,
                 "filter": {"contract_id": contract_id},
             },
         )

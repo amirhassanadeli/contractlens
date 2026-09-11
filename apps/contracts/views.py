@@ -1,10 +1,8 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
-from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 
 from .models import (
     Contract,
@@ -14,23 +12,19 @@ from .models import (
 from .serializers import (
     ContractCreateSerializer,
     ContractListSerializer,
-    QuestionSerializer,
-
-    ConversationSerializer,
     ConversationCreateSerializer,
-
-    MessageSerializer,
-    SendMessageSerializer,
-
+    ConversationSerializer,
     MessageFeedbackSerializer,
-
+    MessageSerializer,
+    QuestionSerializer,
+    SendMessageSerializer,
 )
 from .services.contract_service import ContractService
-from .services.rag_service import RAGService
 from .services.conversation_service import ConversationService
-from .services.message_service import MessageService
 from .services.message_feedback_service import MessageFeedbackService
 from .services.message_regenerate_service import MessageRegenerateService
+from .services.message_service import MessageService
+from .services.rag_service import RAGService
 
 
 class ContractViewSet(viewsets.ModelViewSet):
@@ -87,15 +81,9 @@ class ContractViewSet(viewsets.ModelViewSet):
         )
 
 
-@action(
-    detail=True,
-    methods=["get", "post"],
-    url_path="conversations",
-)
 class ConversationViewSet(viewsets.ViewSet):
 
     def list(self, request):
-        print(request.query_params)
         contract_id = request.query_params.get("contract_id")
 
         if not contract_id:
@@ -106,7 +94,7 @@ class ConversationViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        contract = Contract.objects.get(id=contract_id)
+        contract = get_object_or_404(Contract, id=contract_id)
 
         conversations = ConversationService.list(contract)
 
@@ -126,7 +114,8 @@ class ConversationViewSet(viewsets.ViewSet):
             raise_exception=True,
         )
 
-        contract = Contract.objects.get(
+        contract = get_object_or_404(
+            Contract,
             id=serializer.validated_data["contract_id"],
         )
 
@@ -155,7 +144,8 @@ class MessageViewSet(viewsets.ViewSet):
         Return conversation history.
         """
 
-        conversation = Conversation.objects.get(
+        conversation = get_object_or_404(
+            Conversation,
             id=conversation_pk,
         )
 
@@ -183,7 +173,8 @@ class MessageViewSet(viewsets.ViewSet):
             raise_exception=True,
         )
 
-        conversation = Conversation.objects.get(
+        conversation = get_object_or_404(
+            Conversation,
             id=conversation_pk,
         )
 
@@ -217,7 +208,8 @@ class MessageActionViewSet(ViewSet):
             raise_exception=True,
         )
 
-        message = Message.objects.get(
+        message = get_object_or_404(
+            Message,
             id=pk,
         )
 
@@ -236,9 +228,8 @@ class MessageActionViewSet(ViewSet):
         Regenerate assistant response.
         """
 
-        print("Regenerate called", pk)
-
-        message = Message.objects.get(
+        message = get_object_or_404(
+            Message,
             id=pk,
         )
 

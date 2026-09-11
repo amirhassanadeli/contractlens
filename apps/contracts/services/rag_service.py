@@ -1,6 +1,3 @@
-from uuid import uuid4
-from django.utils import timezone
-
 from django.conf import settings
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -36,17 +33,17 @@ class RAGService:
         """
 
         system_prompt = """
-You are an AI legal assistant.
-
-Answer ONLY using the provided context.
-
-If the answer is not in the context, reply:
-
-"I don't know."
-
-Context:
-{context}
-"""
+            You are an AI legal assistant.
+            
+            Answer ONLY using the provided context.
+            
+            If the answer is not in the context, reply:
+            
+            "I don't know."
+            
+            Context:
+            {context}
+        """
 
         return ChatPromptTemplate.from_messages(
             [

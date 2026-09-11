@@ -35,13 +35,17 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./staticfiles:/app/staticfiles
-      - ./mediafiles:/app/mediafiles
+      - contractlens_static_volume:/app/staticfiles
+      - contractlens_media_volume:/app/mediafiles
     networks:
       - shared-network
 
 volumes:
   postgres_data:
+  contractlens_static_volume:
+    name: contractlens_static_volume
+  contractlens_media_volume:
+    name: contractlens_media_volume
 
 networks:
   shared-network:

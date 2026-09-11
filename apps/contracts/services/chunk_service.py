@@ -10,21 +10,41 @@ from backend.settings import (
 class ChunkService:
 
     @staticmethod
-    def split_documents(documents: list[Document], ) -> list[Document]:
+    def split_documents(documents: list[Document]) -> list[Document]:
+
+        separators = [
+            "\n\n",
+            "\n",
+
+            ". ",
+            "؟ ",
+            "? ",
+            "! ",
+
+            ".",
+            "؟",
+            "?",
+            "!",
+
+            "، ",
+            ", ",
+            "؛ ",
+            "; ",
+            ": ",
+
+            "،",
+            "؛",
+
+            " ",
+            "\u200c",
+
+            "",
+        ]
+
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=CHUNK_SIZE,
             chunk_overlap=CHUNK_OVERLAP,
-            separators=[
-                "\n\n",
-                "\n",
-                ".",
-                "؟",
-                "!",
-                "؛",
-                "،",
-                " ",
-                "",
-            ],
+            separators=separators,
         )
 
         chunks = splitter.split_documents(documents)

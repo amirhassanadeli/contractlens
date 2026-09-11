@@ -41,6 +41,7 @@ class MessageRegenerateService:
             question=user_message.content,
         )
 
+        # 1 of 2 ، 2 of 2
         regenerated_message = Message.objects.create(
             conversation=message.conversation,
             role=MessageRole.ASSISTANT,
